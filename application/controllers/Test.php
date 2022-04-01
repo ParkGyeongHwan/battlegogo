@@ -77,13 +77,13 @@ class Test extends CI_Controller {
         $member_id = $this->session->userdata('_id');
 
         // 그멤버아이디에 대한 돌 리스트
-        $stone_list = $this->Game_model->select_member_stonelist($board_id, 3);
+        $stone_list = $this->Game_model->select_member_stonelist($board_id, 1);
 
         // 가져온 돌리스트에서 돌이 연속으로 5개있는지 체크
-        $min_x = ($x - 4) < 0 ? 0 : ($x - 4);
-        $max_x = ($x + 4) > 18 ? 18 : ($x + 4);
-        $min_y = ($y - 4) < 0 ? 0 : ($y - 4);
-        $max_y = ($y + 4) > 18 ? 18 : ($y + 4);
+        $min_x = ($x - 4); // < 0 ? 0 : ($x - 4);
+        $max_x = ($x + 4); // > 18 ? 18 : ($x + 4);
+        $min_y = ($y - 4); // < 0 ? 0 : ($y - 4);
+        $max_y = ($y + 4); // > 18 ? 18 : ($y + 4);
         
         // 가로 체크
         $count = 0;
@@ -94,7 +94,7 @@ class Test extends CI_Controller {
             });
             
             // 필터링된 돌의 개수가 1이면 돌 존재
-            if (count($result) == 1) {
+            if (count($result) >= 1) {
                 // 연속되는 돌의 개수
                 $count ++;
             } else {
@@ -117,50 +117,57 @@ class Test extends CI_Controller {
             });
             
             // 필터링된 돌의 개수가 1이면 돌 존재
-            if (count($result) == 1) {
+            if (count($result) >= 1) {
                 // 연속되는 돌의 개수
                 $count ++;
             } else {
                 if ($count == 5) {
                     return True;
                 }
+
                 $count = 0;
             }
         }
         if ($count == 5) {
             return True;
         }
-
-        // 대각 체크
+        // 왼쪽 대각 체크
         $count = 0;
-        for ($i = $min_y; $i <= $max_y; $i++) {
-            for($j = $min_x; $j <= $max_x; $j++) {
+        for ($i = 0; $i < 9; $i++) {
 
-            
-            $result = array_filter($stone_list, function ($stone) use($i, $x) {
-                return $stone['positiony'] == $i && $stone['positionx'] == $x;
+            $check_x = $min_x + $i;
+            $check_y = $min_y + $i;
+
+            $result = array_filter($stone_list, function ($stone) use($check_y, $check_x) {
+                return $stone['positiony'] == $check_y && $stone['positionx'] == $check_x;
             });
-        }
+            
             // 필터링된 돌의 개수가 1이면 돌 존재
-            if (count($result) == 1) {
+            if (count($result) >= 1) {
                 // 연속되는 돌의 개수
                 $count ++;
+
             } else {
                 if ($count == 5) {
                     return True;
                 }
                 $count = 0;
-            }
-        
+
+            } 
+            var_dump($count)
         }
         if ($count == 5) {
             return True;
+            
         }
-    
+       
 
-    public function test() {
-        echo "test";
-        echo $this->stone_five_check(1, 5, 3);
     }
+        
 
+        
+    public function test() {
+
+        echo $this->stone_five_check(1, 0, 4);
+    }
 }
