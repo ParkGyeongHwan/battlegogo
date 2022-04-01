@@ -10,19 +10,6 @@
         </script>
 
         <style>
-            
-        div{
-            display: inline-block;
-        }
-        html, body {
-            width: 100%;  
-            height: 100%;
-            background: bisque;
-            -webkit-font-smoothing: antialiased;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        } 
 
         form{
             position: absolute;
@@ -33,18 +20,13 @@
         #waitpage{
             font-size: xx-large;
         }
-
-        #inputBox{
-            width: 200px;
-            height: 50px;
-        }
         </style>
     </head>
     <body>
     <form method="post" action="/index.php/game/play">
         <div id="waitpage">상대방 기다리는 중</div><br /><br /> 
         <div class="row col-15 mb-3 mt-3">
-            <input type="button" value="방폭파" onClick="location.href='/index.php/game/game_list'" class="btn btn-warning active" ><br /><br />
+            <input type="button" value="방폭파" onClick="location.href='이동할페이지'; class="btn btn-warning active" ><br /><br />
             <input type="submit" value="게임화면 이동하기" class="btn btn-warning active">
         </div>
     </form>

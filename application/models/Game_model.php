@@ -5,7 +5,7 @@ class Game_model extends CI_Model {
     {
         $this->load->database();
         // $this->db 사용 가능
-        // @_@123
+        // @_@
     }
 
 

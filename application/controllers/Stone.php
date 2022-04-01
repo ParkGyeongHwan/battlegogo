@@ -35,6 +35,12 @@ class Stone extends CI_Controller {
 
         // 세션에서 멤버 id 가져오기
         $member_id = $this->session->userdata('_id');
+
+        var_dump($board_id);
+        var_dump($position_x);
+        var_dump($position_y);
+        var_dump($member_id);
+        exit();
         
         // 좌표에 돌이 이미 존재하는지 확인
 
@@ -63,7 +69,7 @@ class Stone extends CI_Controller {
         $this->Game_model->insert_game($position_x, $position_y, $new_order, $stone_color, $member_id, $board_id);
 
         // 게임 끝났는지 체크
-        // stone_five_check($board_id, $position_x, $position_y);
+        stone_five_check($board_id, $position_x, $position_y);
     }
     
     public function stone_five_check($board_id, $x, $y) {
@@ -109,8 +115,6 @@ class Stone extends CI_Controller {
             $result = array_filter($stone_list, function ($stone) use($i, $x) {
                 return $stone['positiony'] == $i && $stone['positionx'] == $x;
             });
-
-            var_dump(count($result));
             
             // 필터링된 돌의 개수가 1이면 돌 존재
             if (count($result) == 1) {
@@ -128,6 +132,28 @@ class Stone extends CI_Controller {
         }
 
         // 대각 체크
+        $count = 0;
+        for ($i = $min_y; $i <= $max_y; $i++) {
+
+            $result = array_filter($stone_list, function ($stone) use($i, $x) {
+                return $stone['positiony'] == $i && $stone['positionx'] == $x;
+            });
+            
+            // 필터링된 돌의 개수가 1이면 돌 존재
+            if (count($result) == 1) {
+                // 연속되는 돌의 개수
+                $count ++;
+            } else {
+                if ($count == 5) {
+                    return True;
+                }
+                $count = 0;
+            }
+        }
+        if ($count == 5) {
+            return True;
+        }
+
 
     }
 
