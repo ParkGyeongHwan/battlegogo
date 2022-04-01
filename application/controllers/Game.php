@@ -8,6 +8,7 @@ class Game extends CI_Controller {
 		parent::__construct();
 		$this->load->model('Member_model');
 		$this->load->model('Board_model');
+		$this->load->model('Game_model');
         $this->load->model('Comment_model'); 
         $this->load->library('session');
 
@@ -91,12 +92,12 @@ class Game extends CI_Controller {
         $profile = $this->Member_model->member_profile($member_id);
         $board_id = 1; // 테스트용 보드 아이디
         $board_data = $this->Board_model->select_board($board_id);
-        $comment_list = $this->Comment_model->select_comment_list($board_id);
+        // $comment_list = $this->Comment_model->select_comment_list($board_id);
 
         $data['profile'] = $profile;
         $data['member_id'] = $member_id;
         $data['board_data'] = $board_data;
-        $data['comment_list'] = $comment_list;
+        // $data['comment_list'] = $comment_list;
         
         $this->load->view('game/play', $data);
     }
@@ -105,7 +106,10 @@ class Game extends CI_Controller {
     public function game_throw() {
         $board_id = $this->input->get('board_id'); // get 방식으로 board_id 가져오기
         $board_data = $this->Board_model->select_board($board_id);
-        $member_id = $this->session->userdata('_id');
+
+        // TODO:
+        // $member_id = $this->session->userdata('_id');
+        $member_id = 1;
         $winner_id;
 
         if ($member_id == $board_data->host_id) {
@@ -113,13 +117,63 @@ class Game extends CI_Controller {
         } else {
             $winner_id = $board_data->host_id;
         }
-
-        $result = $this->Board_model->result_update_board($board_id, $winner_id);
+        
+        $this->record_result($board_id, $winner_id);
     }
 
-    //게임끝난후 결과화면을 보여주는 메서드
+    // 게임결과 업데이트 메서드
+    public function record_result($board_id, $winner_id) {
+        // 각 멤버 판수, 승수 업데이트
+        // 방 정보 가져오기
+        $board_data = $this->Board_model->select_board($board_id);
+        
+        $loser_id;
+        if ($winner_id == $board_data->host_id) {
+            $loser_id = $board_data->guest_id;
+        } else {
+            $loser_id = $board_data->host_id;
+        }
+
+        $this->Game_model->record_game_result($winner_id, 1);
+        $this->Game_model->record_game_result($loser_id, 0);
+
+        // 방에 승자정보 업데이트
+        $this->Board_model->result_update_board($board_id, $winner_id);
+
+    }
+
+    // 게임끝난후 결과화면을 보여주는 메서드
     public function result() {
-        $this->load->view("game/result");
+        // 멤버 id 세션에서 가져오기
+        $member_id = $this->session->userdata('_id');
+
+        // 보드 id get방식으로 가져오기
+        $board_id = $this->input->get('board_id');
+        
+        // 보드 정보 가져오기
+        $board_data = $this->Board_model->select_board($board_id);
+
+        // 승자 정보 가져오기
+        $winner_profile = $this->Member_model->member_profile($member_id);
+
+        // 전달할 데이터 (승자 닉네임, 승자 바둑돌 칼라)
+        $data['nick_name'] = $winner_profile->nick;
+        if ($board_data->winner_id == $board_data->host_id) {
+            $data['win_color'] = $board_data->host_color;
+        } else {
+            $data['win_color'] =$board_data->guest_color;
+        }
+
+        if ($member_id == $board_data->winner_id) {
+            // 승자일 경우
+            $this->load->view('game/result_win', $data);
+        } else if ($member_id == $board_data->host_id || $member_id == $board_data->guest_id) {
+            // 패자일 경우
+            $this->load->view('game/result_lose', $data);
+        } else {
+            // 관전자일 경우
+            $this->load->view('game/result_observer', $data);
+        }
     }
 
     public function test_board() {
@@ -137,5 +191,33 @@ class Game extends CI_Controller {
         $result = $this->Board_model->result_update_board($board_id, $winner_id);
     }
     
-    
+    public function game_data() {
+        // 방 id get 방식으로 입력받기
+        $board_id = $this->input->get('board_id');
+
+        // 방 정보 가져오기
+        $board_data = $this->Board_model->select_board($board_id);
+
+        // 바둑돌 순서 가져오기
+        $last_order = $this->Game_model->select_stone_domino($board_id);
+        $new_order;
+        if (isset($last_order->domino)) { 
+            $new_order = $last_order->domino + 1;
+        } else {
+            $new_order = 0;
+        }
+
+        // 바둑돌 리스트 가져오기
+        $stone_list = $this->Game_model->select_game_list($board_id);
+
+        // json 형식으로
+        if ($board_data->winner_id == 0) {
+            $board_data->winner_id = "";
+        }
+        $data['board_data'] = $board_data;
+        $data['order'] = $new_order;
+        $data['stone_list'] = $stone_list;
+
+        echo json_encode($data);
+    }
 }

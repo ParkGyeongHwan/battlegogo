@@ -103,6 +103,7 @@ class Test extends CI_Controller {
                 }
                 $count = 0;
             }
+
         }
         if ($count == 5) {
             return True;
@@ -127,6 +128,7 @@ class Test extends CI_Controller {
 
                 $count = 0;
             }
+            
         }
         if ($count == 5) {
             return True;
@@ -154,7 +156,7 @@ class Test extends CI_Controller {
                 $count = 0;
 
             } 
-            var_dump($count)
+            
         }
         if ($count == 5) {
             return True;
@@ -183,7 +185,7 @@ class Test extends CI_Controller {
                 $count = 0;
 
             } 
-            var_dump($count)
+            
         }
         if ($count == 5) {
             return True;
@@ -198,5 +200,25 @@ class Test extends CI_Controller {
     public function test() {
 
         echo $this->stone_five_check(1, 0, 4);
+    }
+}          } else {
+                if ($count == 5) {
+                    return True;
+                }
+                $count = 0;
+
+            } 
+            
+        }
+        if ($count == 5) {
+            return True;
+            
+        }
+
+
+    }
+
+    public function test() {
+        echo $this->stone_five_check(1, 0, 0);
     }
 }

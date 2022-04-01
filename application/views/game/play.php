@@ -259,7 +259,8 @@
 
             <div class="buttons">
                 <input type="button" id="reload" value="한 판 더 !" class="btn btn-warning" onclick="">
-                <input type="button" value="기권" class="btn btn-warning" onclick="">
+                <input type="button" value="기권" class="btn btn-warning" onClick="location.href='result_lose.php'">
+                <!-- <input type="button" value="기권" class="btn btn-warning" onClick="location.href='index.php/game/result_lose.php'"> -->
             </div>
 
             <!-- <form method="post" action="/index.php/stone/stone_insert">
@@ -289,6 +290,7 @@
             <form action="/index.php/comment/comment_insert" id="chat-form" method="post">
                 <input id="m" name="content" autocomplete="off"/>
                 <input type="hidden" name='board_id' value= <?php echo $board_data->_id?> >
+                <!-- <input type="hidden" name='board_id' value= <?php echo $board_data->_id?> > -->
                 
                 <input type="button" value="SEND" class="btn btn-warning" onclick="test1(); return false;">
             </form>
@@ -365,13 +367,16 @@
                 
                 const obj = JSON.parse(data);
                 let comments;
+                let nicks;
+
+                
                 for (let index = 0; index < obj.length; index++) {
-                    comments += "<tr><td>"+obj[index]['content']+"</tr></td>";
+                    comments += "<tr><td>"+obj[index]['nick']+ " : " +obj[index]['content']+"</tr></td>";
                     
                 }
                 console.log(obj+'리스트 체크 합니다.');
 
-                $("#comment>tbody").html(comments);
+                $("#comment>tbody").html(comments,nicks);
             }, // success 
     
             error : function(xhr, status) {
@@ -389,10 +394,6 @@
             // 2초 간격으로 메시지를 보여줌
             let comment_timerId = setInterval(() => getList(), 500);
              let timerId = setInterval(() => set_board(), 500);
-
-
-
-
 
             canvas = document.getElementById('canvas');
             ctx = canvas.getContext('2d');
@@ -478,7 +479,7 @@ function set_board()
     
         $.ajax({
         cache : false,
-        url : "/index.php/stone/stone_list?board_id=1", // 요기에
+        url : "/index.php/game/game_data?board_id=1", // 요기에
         type : 'GET', 
         // data : formData, 
         // settimeout : 500,
@@ -486,10 +487,28 @@ function set_board()
             // console.log(data);
             
             const obj = JSON.parse(data);
-            for (let index = 0; index < obj.length; index++) { 
-            let stonex = obj[index]['positionx'];
-            let stoney = obj[index]['positiony'];
-            let stone_color = obj[index]['color'];
+            let stone_list = obj['stone_list'];
+            let winner_id = obj['board_data']['winner_id'];
+            let guest_id = obj['board_data']['guest_id'];
+            let host_id = obj['board_data']['host_id'];
+
+            if(winner_id){
+
+                location.href="result?board_id='<?php echo $board_data->_id?>'"; 
+                 
+                
+
+
+                
+                // alert('승부결정남');
+                // console.log('승부결정남');
+            }
+    
+            for (let index = 0; index < stone_list.length; index++) { 
+                console.log(obj);
+            let stonex = stone_list[index]['positionx'];
+            let stoney = stone_list[index]['positiony'];
+            let stone_color = stone_list[index]['color'];
 
             if(stone_color == "0")
             {
@@ -546,14 +565,37 @@ function set_stone(color,x,y)
                 history.push(boardCopy); //무르기를 위해서 판 전체 모양을 배열에 입력
             };
 
-
-            // 마우스 클릭한 위치를 정확한 눈금 위치로 보정
+    //         document.addEventListener('mouseup', (e) => {
+    //     if (e.target.id == 'canvas') {
+    //         let x = Math.round(Math.abs(e.offsetX - margin) / rowSize);
+    //         let y = Math.round(Math.abs(e.offsetY - margin) / rowSize);
+    //         console.log(e.offsetX, e.offsetY, x, y);
+    //         if (e.offsetX > 10 && e.offsetX < 640 && e.offsetY > 10 && e.offsetY < 640) {
+                
+    //             if (board[xyToIndex(x, y)] != -1) {
+    //                 console.log('돌이 놓여있는 곳에 둠');
+    //             } else {
+    //                 // 비어있는 자리이면, 순서에 따라서 흑,백 구분해서 그리는 함수 실행
+    //                 count % 2 == 0
+    //                     ? (board[xyToIndex(x, y)] = 1)
+    //                     : (board[xyToIndex(x, y)] = 2);
+    //                 count++;
+    //                 drawCircle(x, y);
+    //             }
+    //         }
+    //     }
+    // });
+    // 마우스 클릭한 위치를 정확한 눈금 위치로 보정
             document.addEventListener('mouseup', (e) => {
                 if (e.target.id == 'canvas') {
                     let x = Math.round(Math.abs(e.offsetX - margin) / rowSize);
                     let y = Math.round(Math.abs(e.offsetY - margin) / rowSize);
             
                     console.log(x, y);
+
+                    // if(x == 19 || y == 19){
+                    //     alert('')
+                    //         }   
                     
                     $.ajax({
                         cache : false,
@@ -572,9 +614,6 @@ function set_stone(color,x,y)
                 }
             
             });
-
-
-
         }
 
 
