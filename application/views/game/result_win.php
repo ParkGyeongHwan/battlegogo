@@ -117,12 +117,26 @@
         </style>
     </head>
     <body>
-    <form method="post" action="game_list.php">
-        <div id="waitpage">승리했습니다.</div><br /><br /> 
+    <form method="post" action="/index.php/game/game_list">
+        <div id="waitpage">축하합니다! 
+            <?php 
+                if($win_color == 0){
+                    echo " (흑)".$nick_name."님의 승리! ";
+                    // echo $nick_name." ".$win_color;
+                } else{
+                    echo " (백)".$nick_name."님의 승리! ";
+                    // echo $nick_name." ".$win_color;
+                }
+            ?>
+        </div><br /><br /> 
         <div class="row col-15 mb-3 mt-3">
             <input type="submit" value="대기실로 이동" class="w-btn w-btn-gra3 w-btn-gra-anim">
         </div>
     </form>
     </body>
-</html>
+    <script>
 
+
+
+    </script>
+</html>

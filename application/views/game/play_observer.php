@@ -247,19 +247,19 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
-        <title ></title>
+        <title>Battle GoGo</title>
         <script src="script.js"></script>
         <!-- <link rel="stylesheet" href="style.css"> -->
     </head>
     <body>
         <div class="container">
-            <div id="turn"
+            <div
                 class="message"
-                style="font-size:large; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></div>
+                style="font-size:large; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Battle GoGo</div>
 
             <div class="buttons">
                 <input type="button" id="reload" value="한 판 더 !" class="btn btn-warning" onclick="">
-                <input type="button" value="기권" class="btn btn-warning" onclick="game_throw();">
+                <input type="button" value="기권" class="btn btn-warning" onClick="location.href='result_lose.php'">
                 <!-- <input type="button" value="기권" class="btn btn-warning" onClick="location.href='index.php/game/result_lose.php'"> -->
             </div>
 
@@ -302,14 +302,8 @@
         /><br /> <button type="button" onclick="myFunction()">SEND</button> -->
 
     </body>
-        
-
-    
 
     <script>
-
-    
-        
     function test1(){
         var formData = $("#chat-form").serialize();
 
@@ -332,32 +326,7 @@
     }
 
 
-    
-
-    
-    </script>
-
-    <script>
-
-    function game_throw(){
-        $.ajax({
-            cache : false,
-            url : "/index.php/game/game_throw?board_id=<?php echo $board_data->_id?>", // 요기에
-            type : 'GET', 
-            // data : formData, 
-            // settimeout : 500,
-            success : function(data) {
-                console.log(data);
-            }, // success 
-    
-            error : function(xhr, status) {
-                console.log(xhr + " : " + status);
-            }
-
-        });
-        
-    }
-        function getList(){
+    function getList(){
         var number = 0;
         console.log('list'+number);
         number++;
@@ -378,7 +347,7 @@
                 
                 for (let index = 0; index < obj.length; index++) {
                     comments += "<tr><td>"+obj[index]['nick']+ " : " +obj[index]['content']+"</tr></td>";
-                    console.log(obj[index]['nick']);    
+                    
                 }
                 console.log(obj+'리스트 체크 합니다.');
 
@@ -390,7 +359,11 @@
             }
         }); // $.ajax */
     }
-        const colorData = {0: '흑', 1: '백'};
+
+    
+    </script>
+
+    <script>
         window.onload = function () {
 
             // 2초 간격으로 메시지를 보여줌
@@ -494,52 +467,27 @@ function set_board()
             let guest_id = obj['board_data']['guest_id'];
             let host_id = obj['board_data']['host_id'];
             let order = obj['order'];
-            let host_color = obj['board_data']['host_color'];
+            let hose_color = obj['board_data']['host_color'];
             let guest_color = obj['board_data']['guest_color'];
-
-            
-
-            
-            
-            if("<?php echo $member_id?>" == host_id){
-                // 호스트일 때
-                if(host_color == order % 2) {
-                    // 내 턴4
-                    document.getElementById('turn').innerHTML=`<?php echo $profile->nick?> 님 (${colorData[host_color]}) 턴입니다.`;
-                    
-                    
-                } else {
-                    // 상대 턴
-                    document.getElementById('turn').innerHTML=`<?php echo $profile->nick?> 님 (${colorData[host_color]}) 턴이 아닙니다.`;
-                }
-                
-            } else {
-                // 게스트일 때
-                if(guest_color == order % 2) {
-                    //내턴ㅁ
-                    document.getElementById('turn').innerHTML=`<?php echo $profile->nick?> 님 (${colorData[guest_color]}) 턴입니다.`;
-                }
-                else {
-                    // 상대턴
-                    document.getElementById('turn').innerHTML=`<?php echo $profile->nick?> 님 (${colorData[guest_color]}) 턴이 아닙니다.`;
-                }
-            }
-
-
 
             console.log(host_id);
             console.log(guest_id);
 
-            
-
             if(winner_id){
-                location.href="result?board_id='<?php echo $board_data->_id?>'"; 
+
+                
+
+                // location.href="result?board_id='<?php echo $board_data->_id?>'"; 
+                 
+                
+
+
+                
                 // alert('승부결정남');
-                console.log('승부결정남');
+                // console.log('승부결정남');
             }
     
             for (let index = 0; index < stone_list.length; index++) { 
-                
                 console.log(order);
                 console.log(obj);
             let stonex = stone_list[index]['positionx'];
@@ -637,24 +585,13 @@ function set_stone(color,x,y)
                         return;
                     }   
                     
-                    $.ajax({
-                        cache : false,
-                        url : "/index.php/stone/stone_insert", // 요기에
-                        type : 'POST', 
-                        data : {"board_id": '<?php echo $board_data->_id?>', "position_x":x , "position_y":y}, 
-                        success : function(data) {
-                            console.log(data);
-                        
-                        }, // success 
-                
-                        error : function(xhr, status) {
-                            console.log(xhr + " : " + status);
-                        }
-                    }); // $.ajax */
                 }
             
             });
         }
+
+
+        
     </script>
 
 </html>

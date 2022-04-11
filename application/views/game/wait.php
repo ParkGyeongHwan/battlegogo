@@ -8,8 +8,13 @@
         <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js">
         </script>
+        <script
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
 
         <style>
+
         body{
         background-color: bisque;
         display: inline-flex;
@@ -78,30 +83,52 @@
             transform: translate(3%, 50%);
             margin-bottom: 80%;
             }
-
         </style>
     </head>
     <body>
     <form method="post" action="/index.php/game/play">
-    <div class="wait_font">
-        <h2 id="waitpage">
-            <span>상</span>
-            <span>대</span>
-            <span>방</span>
-            <br /><br />
-            <span>기</span>
-            <span>다</span>
-            <span>리</span>
-            <span>는</span>
-            <span>중</span>                    
-            <span>...</span>                    
-        </h2>
-    </div>
-
+        <div id="waitpage">상대방 기다리는 중</div><br /><br /> 
         <div class="row col-15 mb-3 mt-3">
-            <input type="button" value="방폭파" onClick="location.href='이동할페이지'; class="btn btn-warning active" ><br /><br />
+            <input type="button" value="방폭파" onClick="location.href='/index.php/game/game_delete?board_id=<?php echo $board_id?>';" class="btn btn-warning active" ><br /><br />
             <input type="submit" value="게임화면 이동하기" class="btn btn-warning active">
         </div>
     </form>
+
     </body>
+
+    <script>
+        let timerId = setInterval(() => set_wait(), 500);
+
+        function set_wait(){
+            // var formData = $("#chat-form").serialize();
+
+        $.ajax({
+            cache : false,
+            url : "/index.php/game/wait_check?board_id=<?php echo $board_id?>", // 
+            type : 'GET', 
+            // data : formData, 
+            // settimeout : 500,
+            success : function(data) {
+                // console.log(data);
+                
+                const obj = JSON.parse(data);
+
+                // let status = obj["board_data"]["status"];
+                console.log(obj);
+
+            if(obj["status"] == 1){
+                $(location).attr("href", "/index.php/game/matching?board_id=<?php echo $board_id?>");
+            } 
+            
+                
+            }, // success 
+    
+            error : function(xhr, status) {
+                console.log(xhr + " : " + status);
+            }
+        }); 
+        }
+
+
+    </script>
 </html>

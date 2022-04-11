@@ -12,12 +12,13 @@
                         background-color: bisque;
                         display: flex;
                         text-align: center;
-                        max-width: 400px;
+                        /* max-width: 400px; */
                         display: flex;
                         flex-direction:column;
                         /* overflow: hidden; */
                         border-radius: 2rem;
                         box-shadow: 0px 1rem 1.5rem rgba(0,0,0,0.5);
+                        /* margin: 0 auto; */
                         
                     }
                     .hc{
@@ -41,17 +42,34 @@
                         top: 50%;
                         transform: translate(-50%, -50%);
                     }
+                    .progressbar {
+                        position: fixed;
+                        width: 100%;
+                        height: 20px;
+                        background-color: rgb(62,28,29);
+                      }
+                      .progress{
+                        width: 0;
+                        height: 100%;
+                        background-color: rgb(255, 231, 10);
+                        transition: width 1s linear 0s;
+                      }
 
                 </style>
             </head>
             <body class="hc vc"> 
-            <table class="table table-bordered" id="hc vc">  
+            <div class="progressbar">
+            <div class="progress"> </div>
+            </div>
+            <table class="table table-bordered" id="hc vc"  style="border: hidden;">
+
              
             <br/>
             <br/>
-            <form >
+            
             <h1>대기실</h1>  <br /><br />
             <h2><?php echo $profile['nick'].'님'.' '.$profile['win'].'승 '.$profile['lose']?>패</h2>
+            <a href="/index.php/game/create">방만들기</a>
             
             
   
@@ -70,15 +88,16 @@ foreach($board_list as $row)
 { 
 
   if ($row['status'] == 0) {
-    $row['status'] = '대기';
+    $row['status'] = '<font color=\'blue\'>대기</font>';
     $row['button_label'] = '게임시작';
+    
   }
   else if($row['status'] == 1) {
-    $row['status'] = '관전';
+    $row['status'] = '<font color=\'green\'>관전</font>';
     $row['button_label'] = '관전입장';
   }
   else if($row['status'] == 2) {
-    $row['status'] = '완료';
+    $row['status'] = '<font color=\'red\'>완료</font>';
     $row['button_label'] = '기보보기';
   }
 ?>
@@ -86,7 +105,7 @@ foreach($board_list as $row)
       <tr>
         <td><?php echo $row['status']?></td>
         <td><?php echo $row['title']?></td>
-        <td><a href="/index.php/game/play"><?php echo $row['button_label']?></a></td>
+        <td><a href="/index.php/game/enter?board_id=<?php echo $row['_id']?>"><?php echo $row['button_label']?></a></td>
       </tr>
 
 <?php
@@ -96,10 +115,21 @@ foreach($board_list as $row)
                 </tbody>
 
               </table>
-           <a href="/index.php/game/create">방만들기</a>
+           <!-- 요기 -->
            
             </form>
           </table>
        </body>
+
+       <script>
+         window.addEventListener('scroll',function(){
+          var bodyEl = document.querySelector('body');
+          var bodyHeight = bodyEl.offsetHeight;
+          var scrollable = bodyHeight - window.innerHeight;
+          var progressEl = document.querySelector('.progress');
+          var per = Math.floor(window.scrollY / scrollable * 100) + '%';
+          progressEl.style.width = per;
+        });
+        </script>
         
 </html>

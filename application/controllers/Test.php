@@ -201,14 +201,22 @@ class Test extends CI_Controller {
 
         echo $this->stone_five_check(1, 0, 4);
     }
-}          } else {
+}ck_y && $stone['positionx'] == $check_x;
+            });
+            
+            // 필터링된 돌의 개수가 1이면 돌 존재
+            if (count($result) >= 1) {
+                // 연속되는 돌의 개수
+                $count ++;
+
+            } else {
                 if ($count == 5) {
                     return True;
                 }
                 $count = 0;
 
             } 
-            
+            var_dump($count);
         }
         if ($count == 5) {
             return True;
@@ -219,6 +227,6 @@ class Test extends CI_Controller {
     }
 
     public function test() {
-        echo $this->stone_five_check(1, 0, 0);
+        echo $this->stone_five_check(1, 4, 0);
     }
 }

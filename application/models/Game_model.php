@@ -27,7 +27,7 @@ class Game_model extends CI_Model {
 
 
      //게임종료 판단을 위한 착수멤버의 스톤 리스트전달
-     public function select_member_stonelist($board_id,$member_id) {
+    public function select_member_stonelist($board_id,$member_id) {
         //TODO : 돌리스트를 가져오는 쿼리
         //리턴 값 : 돌리스트
         $data = $this->db->query("
@@ -48,11 +48,21 @@ class Game_model extends CI_Model {
     public function select_stone_domino($board_id) {
         $data = $this->db->query("
         select 
-            MAX(domino) as domino
+            domino,
+            UNIX_TIMESTAMP(insert_time) as insert_time
         from 
             GAME
         where
-            waitboard_id = '".$board_id."'
+            waitboard_id = '".$board_id."' 
+            and
+            domino = (
+                select
+                    MAX(domino)
+                from
+                    GAME
+                where
+                    waitboard_id = '".$board_id."'
+            )
         ");
         return $data->row();
 
@@ -116,5 +126,19 @@ class Game_model extends CI_Model {
         //TODO : 돌 먹혔을때 상태를 바꿔주는 쿼리
         //리턴 값 : x
     }
+
+    //게임 승수 확인 
+    public function game_total_result($member_id) {
+        //리턴 값 : 
+    
+            $this->db->query("
+            select
+                count(_id)
+            from
+                waitboard
+            where
+                
+            ");
+        }
 
 }

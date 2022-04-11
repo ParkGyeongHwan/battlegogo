@@ -4,6 +4,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link
             href="style.css" rel="stylesheet" type="test/css">
+            <script
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
         <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js">
         </script>
@@ -46,7 +50,7 @@
         .profile{
         width: 8rem;
         height: 8rem;
-        background-image: url("https://firebasestorage.googleapis.com/v0/b/flutter-9239e.appspot.com/o/IMG_4363%203.jpg?alt=media&token=5b66166c-353a-40e0-bf95-933e08fdfabb");
+        background-image: url("https://firebasestorage.googleapis.com/v0/b/flutter-9239e.appspot.com/o/IMG_1530%203.jpg?alt=media&token=00967967-45fc-49f4-b0a6-e79060f86f57");
         background-size: cover;
         border-radius: 50%;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
@@ -154,12 +158,38 @@
                 </div>
 
                     <h2 class="name" >로그인</h2>
-                    <div class="row form-floating mt-3"> 아이디 <input type="text" name="email" class="inputBox"></div> <br /><br /> 
+                    <div class="row form-floating mt-3"> 아이디 <input type="text" name="email" class="inputBox" id='id'></div> <br /><br /> 
                     
-                    <div class="row form-floating mb-3 mt-3">  패스워드 <input type="password" name="password" class="inputBox"></div> <br /><br />
+                    <div class="row form-floating mb-3 mt-3">  패스워드 <input type="password" name="password" class="inputBox" id='pw'></div> <br /><br />
                     <div class="login_btn"> <input type="submit" value="로그인하기" class="w-btn w-btn-gra3 w-btn-gra-anim"><br><br> </div>
                     <br /><div class="desc mt-3"> <a href="/index.php/member/input">회원가입</a> </div>
             </div>
         </form>
     </body>
+    <script>
+
+        // $(function () {
+
+        //     $(".login_btn").click(function () {
+        //         let password = $("#pw")
+        //             .val()
+        //             .length;
+
+        //         let id = $("#id")
+        //             .val()
+        //             .length;
+
+        //         if (id !=  ) {
+        //             alert("아이디가 틀렸습니다 다시 입력하세요.");
+        //             return;
+        //         }
+
+        //         if (password !=) {
+        //             alert("비밀번호가 틀렸습니다 다시 입력하세요.");
+        //             return;
+        //         }
+        //     })
+
+        // });
+    </script>
 </html>

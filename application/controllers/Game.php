@@ -27,6 +27,13 @@ class Game extends CI_Controller {
         echo '초기화면입니다';
     }
 
+    //방 폭파 메서드
+    public function game_delete() {
+        $board_id = $this->input->get('board_id');
+        $this->Board_model->delete_board($board_id);
+        header("Location: /index.php/game/game_list");
+    }
+
     //게임 대기실 리스트를 불러오는 메서드
     public function game_list() {
         $_id = $this->session->userdata('_id');
@@ -58,48 +65,89 @@ class Game extends CI_Controller {
         $host_color = $this->input->post('color');
         $guest_color = ($host_color + 1) % 2;
 
-        $this->Board_model->insert_board($title, $member_id, $host_color, $guest_color);
+        $board_id = $this->Board_model->insert_board($title, $member_id, $host_color, $guest_color);
 
-        $this->wait();
+        $this->wait($board_id);
     }
 
     // 방 입장 버튼을 눌렀을 때, 수행할 메서드
     public function enter() {
         $board_id = $this->input->get('board_id'); // get 방식으로 방 _id 값을 받아
         $member_id = $this->session->userdata('_id'); // 세션에서 member_id 값을 받아
+
         
         $result = $this->Board_model->enter_board($member_id, $board_id);
         
-        $this->wait();
+        // 관전자일 경우는 바로 관전자 화면으로
+        $board_data = $this->Board_model->select_board($board_id);
+        if ($member_id != $board_data->host_id && $member_id != $board_data->guest_id) {
+            header("Location: /index.php/game/play_observer?board_id=".$board_id);
+        } else {
+            $this->wait($board_id);
+        }
     }
 
     // 방생성후 대기화면을 보여주는 메서드
-    public function wait() {
-        $this->load->view("game/wait");
+    public function wait($board_id) {
+        $data['board_id'] = $board_id;
+        $this->load->view("game/wait", $data);
     }
 
+    // 대기중일 때 방 상태를 체크하는 메서드
     public function wait_check() {
-        $result = $this->Board_model->check_board_status(5);
+        $board_id = $this->input->get('board_id');
+        $result = $this->Board_model->check_board_status($board_id);
 
-        var_dump($result);
+        $data['status'] = $result->status;
+        echo json_encode($data);
+    }
+
+    // 매칭 후 매칭중화면을 보여주는 메서드
+    public function matching() {
+        $board_id = $this->input->get('board_id');
+        $data['board_id'] = $board_id;
+        $this->load->view("game/matching", $data);
+    }
+
+
+    public function match_check() {
+        $board_id = $this->input->get('board_id');
+        $result = $this->Board_model->check_board_status($board_id);
+
+        $data['status'] = $result->status;
+        echo json_encode($data);
     }
 
     // 게임시작후 진행화면을 보여주는 메서드
     public function play() {
-        // $member_id = $this->session->userdata['_id'];
-        $member_id = 10; // 테스트용 멤버 아이디(관전자)
-        // $board_id = $this->input->get('board_id'); // get방식으로 board_id 가져오기
+        $member_id = $this->session->userdata['_id'];
+        // $member_id = 10; // 테스트용 멤버 아이디(관전자)
+        $board_id = $this->input->get('board_id'); // get방식으로 board_id 가져오기
         $profile = $this->Member_model->member_profile($member_id);
-        $board_id = 1; // 테스트용 보드 아이디
+        // $board_id = 1; // 테스트용 보드 아이디
         $board_data = $this->Board_model->select_board($board_id);
-        // $comment_list = $this->Comment_model->select_comment_list($board_id);
 
         $data['profile'] = $profile;
         $data['member_id'] = $member_id;
         $data['board_data'] = $board_data;
-        // $data['comment_list'] = $comment_list;
         
         $this->load->view('game/play', $data);
+    }
+
+    // 게임시작후 진행화면을 보여주는 메서드 (관전자)
+    public function play_observer() {
+        $member_id = $this->session->userdata['_id'];
+        // $member_id = 10; // 테스트용 멤버 아이디(관전자)
+        $board_id = $this->input->get('board_id'); // get방식으로 board_id 가져오기
+        $profile = $this->Member_model->member_profile($member_id);
+        // $board_id = 1; // 테스트용 보드 아이디
+        $board_data = $this->Board_model->select_board($board_id);
+
+        $data['profile'] = $profile;
+        $data['member_id'] = $member_id;
+        $data['board_data'] = $board_data;
+        
+        $this->load->view('game/play_observer', $data);
     }
 
     // 기권할 경우 수행할 컨트롤러 메서드
@@ -107,9 +155,7 @@ class Game extends CI_Controller {
         $board_id = $this->input->get('board_id'); // get 방식으로 board_id 가져오기
         $board_data = $this->Board_model->select_board($board_id);
 
-        // TODO:
-        // $member_id = $this->session->userdata('_id');
-        $member_id = 1;
+        $member_id = $this->session->userdata('_id');
         $winner_id;
 
         if ($member_id == $board_data->host_id) {
@@ -118,11 +164,15 @@ class Game extends CI_Controller {
             $winner_id = $board_data->host_id;
         }
         
-        $this->record_result($board_id, $winner_id);
+        // $this->record_result($board_id, $winner_id);
+        header("Location: /index.php/game/record_result?board_id=".$board_id."&winner_id=".$winner_id); // Game->record_result 이동
     }
 
     // 게임결과 업데이트 메서드
-    public function record_result($board_id, $winner_id) {
+    public function record_result() {
+        $board_id = $this->input->get('board_id');
+        $winner_id = $this->input->get('winner_id');
+
         // 각 멤버 판수, 승수 업데이트
         // 방 정보 가져오기
         $board_data = $this->Board_model->select_board($board_id);
@@ -207,6 +257,56 @@ class Game extends CI_Controller {
             $new_order = 0;
         }
 
+        if (isset($last_order->insert_time)) {
+            $last_insert_time = $last_order->insert_time;
+            $current_time = time();
+
+            // 마지막 요청으로부터 10초가 지나면 게임 종료 처리
+            $winner_id;
+            if ($current_time - $last_insert_time > 10) {
+                if ($new_order % 2 == $board_data->host_color) {
+                    $winner_id = $board_data->guest_id;
+                } else {
+                    $winner_id = $board_data->host_id;
+                }
+
+                $loser_id;
+                if ($winner_id == $board_data->host_id) {
+                    $loser_id = $board_data->guest_id;
+                } else {
+                    $loser_id = $board_data->host_id;
+                }
+
+                $this->Game_model->record_game_result($winner_id, 1);
+                $this->Game_model->record_game_result($loser_id, 0);
+
+                // 방에 승자정보 업데이트
+                $this->Board_model->result_update_board($board_id, $winner_id);
+            }
+        } else {
+            // 마지막 요청 시간 세션에 저장
+            $last_check_time = $this->session->userdata($board_id.'last_check_time');
+            $current_time = time();
+
+            // 첫 요청은 일단 기록
+            if ($last_check_time == '') {
+                $this->session->set_userdata($board_id.'last_check_time', $current_time);
+            } else {
+                // 게임이 시작되고도 30초동안 착수하지 않을 경우 방장이 패배
+                if ($current_time - $last_check_time > 30) {
+                    $winner_id = $board_data->guest_id;
+                    $loser_id = $board_data->host_id;
+
+                    $this->Game_model->record_game_result($winner_id, 1);
+                    $this->Game_model->record_game_result($loser_id, 0);
+
+                    // 방에 승자정보 업데이트
+                    $this->Board_model->result_update_board($board_id, $winner_id);
+                    $this->session->unset_userdata($board_id.'last_check_time', $current_time);
+                }
+            }
+        }
+
         // 바둑돌 리스트 가져오기
         $stone_list = $this->Game_model->select_game_list($board_id);
 
@@ -219,5 +319,15 @@ class Game extends CI_Controller {
         $data['stone_list'] = $stone_list;
 
         echo json_encode($data);
+    }
+
+    public function test() {
+        $last_order = $this->Game_model->select_stone_domino(14);
+
+        if (isset($last_order->insert_time)) {
+            if (time() - $last_order->insert_time > 5) {
+                echo '5초 지남';
+            }
+        }
     }
 }

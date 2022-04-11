@@ -25,7 +25,7 @@ class Board_model extends CI_Model {
             OR status = 1
             OR status = 2
         ORDER BY 
-            status ASC
+            created_at DESC
         ");
         return $data->result_array();
     }
@@ -40,6 +40,9 @@ class Board_model extends CI_Model {
         values 
                 ('".$title."', '".$member_id."', '".$host_color."','".$guest_color."');
         ");
+        
+        return  $this->db->insert_id();
+        
     }
     
     //방폭파 메서드
